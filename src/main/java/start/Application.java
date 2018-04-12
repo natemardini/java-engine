@@ -1,27 +1,32 @@
 package start;
 
-import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
-import com.sun.net.httpserver.HttpServer;
+
+import fi.iki.elonen.NanoHTTPD;
 
 import java.io.IOException;
-import java.io.OutputStream;
-import java.net.InetSocketAddress;
 
-public class Application implements HttpHandler {
-    public static void main(String[] args) throws Exception {
-        HttpServer server = HttpServer.create(new InetSocketAddress(8000), 0);
-        server.createContext("/", new Application());
-        server.setExecutor(null);
-        server.start();
+public class Application extends NanoHTTPD {
+    public static void main(String[] args)  {
+        try {
+            new Application();
+        } catch (IOException ex) {
+            System.err.println("We crashed and burned cause of: " + ex);
+        }
+    }
+
+    private Application() throws IOException {
+        super(8080);
+
+        start(NanoHTTPD.SOCKET_READ_TIMEOUT, false);
+        System.out.println("Rejoice! For we are live on port 8080!");
     }
 
     @Override
-    public void handle(HttpExchange exchange) throws IOException {
-        String response = "This is the response";
-        exchange.sendResponseHeaders(200, response.length());
-        OutputStream os = exchange.getResponseBody();
-        os.write(response.getBytes());
-        os.close();
+    public Response serve(IHTTPSession session) {
+        String msg = "<html><p>Remember!</p></html>";
+        System.out.println(session.getMethod().toString() + " " + session.getUri());
+
+        return newFixedLengthResponse(msg);
     }
+
 }
