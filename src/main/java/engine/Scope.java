@@ -3,7 +3,7 @@ package engine;
 import lombok.Getter;
 
 
-public class RouteGroup {
+public class Scope {
 
     @Getter
     private String path;
@@ -11,7 +11,7 @@ public class RouteGroup {
     @Getter
     private Route[] routes;
 
-    public RouteGroup(String path, Route... routes) {
+    public Scope(String path, Route... routes) {
         this.path = path;
         this.routes = routes;
 
@@ -20,7 +20,7 @@ public class RouteGroup {
         }
     }
 
-    public RouteGroup(String path, RouteGroup group) {
+    public Scope(String path, Scope group) {
         this.path = path;
         this.routes = group.getRoutes();
 

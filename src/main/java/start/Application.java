@@ -2,8 +2,9 @@ package start;
 
 import controllers.HomeController;
 import engine.BoaEngine;
+import engine.BoaExchange;
 import engine.Route;
-import engine.RouteGroup;
+import engine.Scope;
 
 public class Application extends BoaEngine {
 
@@ -15,12 +16,19 @@ public class Application extends BoaEngine {
 
     @Override
     public void router() {
-        new RouteGroup("^/bob",
-                new RouteGroup("/ray",
+        new Scope("^/bob",
+                new Scope("/ray",
                         get("/(\\w+)/(\\w+)", HomeController::index),
                         post("/\\w+$", HomeController::index),
                         put("/\\w+$", HomeController::index)
                 )
         );
+    }
+
+    @Override
+    public void beforeFilter(BoaExchange client, Route route) {
+        super.beforeFilter(client, route);
+
+        System.out.println("Going to " + client.getPath());
     }
 }

@@ -1,7 +1,5 @@
 package engine;
 
-import engine.BoaSocket;
-import framework.Controller;
 import lombok.Getter;
 import lombok.Setter;
 
