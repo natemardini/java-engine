@@ -1,34 +1,38 @@
 package start;
 
 import controllers.HomeController;
-import engine.BoaEngine;
-import engine.BoaExchange;
-import engine.Route;
-import engine.Scope;
+import engine.base.BoaEngine;
+import engine.base.BoaMiddleware;
+import engine.connection.BoaExchange;
 
 public class Application extends BoaEngine {
 
     public static void main(String[] args) {
         BoaEngine engine = new Application();
+
         engine.setPort(8001);
+        engine.use(Application::logger);
+
         engine.start();
     }
 
     @Override
     public void router() {
-        new Scope("^/bob",
-                new Scope("/ray",
-                        get("/(\\w+)/(\\w+)", HomeController::index),
-                        post("/\\w+$", HomeController::index),
-                        put("/\\w+$", HomeController::index)
+        scope("^/bob",
+                scope("/ray",
+                        get("/hello/{bob}", HomeController::index)
                 )
         );
     }
 
-    @Override
-    public void beforeFilter(BoaExchange client, Route route) {
-        super.beforeFilter(client, route);
-
-        System.out.println("Going to " + client.getPath());
+    private static void logger(BoaExchange client, BoaMiddleware next) {
+        long start = System.currentTimeMillis();
+        next.yield();
+        String method = client.getMethod();
+        String path = client.getPath();
+        String code = String.valueOf(client.getStatusCode());
+        String ms = String.valueOf(System.currentTimeMillis() - start);
+        String log = "INC: " + method + " " + path + "  --  OUT: " + code + " (" + ms + "ms)";
+        System.out.println(log);
     }
 }
