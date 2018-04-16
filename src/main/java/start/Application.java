@@ -1,9 +1,8 @@
 package start;
 
-import controllers.HomeController;
 import engine.base.BoaEngine;
+import engine.base.BoaExchange;
 import engine.base.BoaMiddleware;
-import engine.connection.BoaExchange;
 
 public class Application extends BoaEngine {
 
@@ -11,6 +10,7 @@ public class Application extends BoaEngine {
         BoaEngine engine = new Application();
 
         engine.setPort(8001);
+        engine.setMultiThreaded(true);
         engine.use(Application::logger);
 
         engine.start();
@@ -18,11 +18,7 @@ public class Application extends BoaEngine {
 
     @Override
     public void router() {
-        scope("^/bob",
-                scope("/ray",
-                        get("/hello/{bob}", HomeController::index)
-                )
-        );
+
     }
 
     private static void logger(BoaExchange client, BoaMiddleware next) {

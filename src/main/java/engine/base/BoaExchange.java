@@ -1,22 +1,21 @@
-package engine.connection;
+package engine.base;
 
 import com.google.gson.Gson;
-import engine.base.HttpHelpers;
-import lombok.AccessLevel;
+
 import lombok.Getter;
 import lombok.Setter;
 import org.jtwig.JtwigModel;
 import org.jtwig.JtwigTemplate;
 
 import java.io.BufferedReader;
-import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
 import java.util.*;
 
-public class BoaExchange implements Closeable {
+public class BoaExchange {
 
+	@Getter
     private Socket socket;
 
     @Getter @Setter
@@ -48,13 +47,21 @@ public class BoaExchange implements Closeable {
     public BoaExchange(Socket socket) {
         this.socket = socket;
 
-        responseHeader.put("Server", "Boa/0.0.1");
-        responseHeader.put("Content-Type", "text/html");
-        responseHeader.put("Date", new Date().toString());
+        responseHeader.put("Server", "Boa/0.0.2");
         responseHeader.put("Connection", "Keep-Alive");
+        responseHeader.put("Date", new Date().toString());
+        responseHeader.put("Content-Type", "text/html");
         responseHeader.put("Content-Length", "0");
 
         this.parseRequest();
+    }
+
+    public void setContentType(String type) {
+        responseHeader.replace("Content-Type", type);
+    }
+
+    public void setContentLength(int length) {
+        responseHeader.replace("Content-Length", String.valueOf(length));
     }
 
     public String getParam(String key) {
@@ -79,9 +86,8 @@ public class BoaExchange implements Closeable {
                 encoding = "application/json";
             }
 
-            String contentLength = String.valueOf(raw.length());
-            responseHeader.replace("Content-Type", encoding);
-            responseHeader.replace("Content-Length", contentLength);
+            setContentType(encoding);
+            setContentLength(raw.length());
 
             responseBody = raw;
         }
@@ -191,6 +197,15 @@ public class BoaExchange implements Closeable {
         }
     }
 
+    public Object parseBodyToType(Class<?> type) {
+        if (body == null) {
+            return null;
+        }
+
+        Gson g = new Gson();
+        return g.fromJson(body, type);
+    }
+
     private void parseBody(BufferedReader reader) {
         String contentLength = requestHeader.getOrDefault("Content-Length", "0");
         long contentSize = Long.parseLong(contentLength);
@@ -209,13 +224,12 @@ public class BoaExchange implements Closeable {
         }
     }
 
-    @Override
     public void close() {
         if (socket != null && !socket.isClosed()) {
             try {
                 socket.close();
             } catch (Exception e) {
-                System.err.println("Could not close socket!");
+                System.err.println("Could not close socket!" + e);
             }
         }
     }

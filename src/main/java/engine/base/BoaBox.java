@@ -1,6 +1,5 @@
 package engine.base;
 
-import engine.connection.BoaExchange;
 import engine.controller.Route;
 
 import java.util.ArrayList;
@@ -9,22 +8,27 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+
 public class BoaBox implements Runnable {
 
-    private BoaEngine server;
+    private BoaEngine engine;
     private BoaExchange client;
     private List<BoaMiddleware> middlewares = new ArrayList<>();
 
-    BoaBox(BoaEngine server, BoaExchange client) {
-        this.server = server;
+    BoaBox(BoaEngine engine, BoaExchange client) {
+        this.engine = engine;
         this.client = client;
-        server.onRequest(this.client);
+        this.engine.onRequest(this.client);
         organizeMiddleware();
     }
 
     @Override
-    public void run() {
-        runMiddleware();
+	public void run() {
+    	if (middlewares.size() > 0 && middlewares.get(0) != null) {
+            middlewares.get(0).yield();
+        }
+    	
+    	close();
     }
 
     private void grabParamsFromRequestPath(BoaExchange client, Route route) {
@@ -42,8 +46,8 @@ public class BoaBox implements Runnable {
         BoaMiddleware next = new BoaMiddleware(client, this::mapRoute);
         middlewares.add(next);
 
-        for (int i = server.getMiddlewareLambdas().size() - 1; i >= 0; i--) {
-            MiddlewareLambda lambda = server.getMiddlewareLambdas().get(i);
+        for (int i = engine.getMiddlewareLambdas().size() - 1; i >= 0; i--) {
+            MiddlewareLambda lambda = engine.getMiddlewareLambdas().get(i);
             BoaMiddleware middleware = new BoaMiddleware(client, lambda, next);
             middlewares.add(middleware);
             next = middleware;
@@ -52,16 +56,10 @@ public class BoaBox implements Runnable {
         Collections.reverse(middlewares);
     }
 
-    private void runMiddleware() {
-        if (middlewares.size() > 0 && middlewares.get(0) != null) {
-            middlewares.get(0).yield();
-        }
-    }
-
     private void mapRoute(BoaExchange client, BoaMiddleware _nx) {
         List<Route> matchedRoutes = new ArrayList<>();
-
-        server.getRoutes().forEach(route -> {
+        
+        engine.getRoutes().forEach(route -> {
             if (client.getPath().matches(route.getPath()) && route.getMethods().contains(client.getMethod())) {
                 matchedRoutes.add(route);
             }
@@ -70,11 +68,15 @@ public class BoaBox implements Runnable {
         if (matchedRoutes.size() == 1) {
             Route matchedRoute = matchedRoutes.get(0);
             grabParamsFromRequestPath(client, matchedRoute);
-            server.beforeFilter(client, matchedRoute);
+            engine.beforeFilter(client, matchedRoute);
             matchedRoute.getController().negotiate(client);
-            server.afterFilter(client, matchedRoute);
+            engine.afterFilter(client, matchedRoute);
         } else {
-            server.defaultErrorResponse(client, matchedRoutes);
+            engine.defaultErrorResponse(client, matchedRoutes);
         }
     }
+
+	public void close() {
+		client.close();
+	}
 }

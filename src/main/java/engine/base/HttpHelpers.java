@@ -1,8 +1,5 @@
 package engine.base;
 
-import java.util.HashMap;
-import java.util.Map;
-
 public abstract class HttpHelpers {
     public static final int CONTINUE = 100;
 
@@ -69,6 +66,8 @@ public abstract class HttpHelpers {
             case INTERNAL_SERVER_ERROR:
                 text = "Internal Server Error";
                 break;
+            default:
+                text = "OK";
         }
         return text;
     }

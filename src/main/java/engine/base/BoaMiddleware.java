@@ -1,7 +1,5 @@
 package engine.base;
 
-import engine.connection.BoaExchange;
-
 import java.util.Objects;
 
 public class BoaMiddleware {

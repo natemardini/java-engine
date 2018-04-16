@@ -4,31 +4,30 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 public class Route {
 
     @Getter @Setter
-    private String path = "^/////";
+    private String path = "^/";
 
     @Getter
     private List<String> methods = new ArrayList<>();
 
     @Getter
-    private Controller controller;
+    private IController controller;
 
     @Getter
     private List<String> paramNames = new ArrayList<>();
 
-    public Route(String path, List<String> methods, Controller controller) {
+    public Route(String path, List<String> methods, IController controller) {
         this.path = processPath(path);
         this.methods = methods;
         this.controller = controller;
     }
 
-    public Route(String path, String method, Controller controller) {
+    public Route(String path, String method, IController controller) {
         this(path, Collections.singletonList(method), controller);
     }
 
