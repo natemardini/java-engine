@@ -125,7 +125,7 @@ public class BoaExchange {
         try {
             addBody(body, "text/html");
             String headers = compileResponseHeader();
-            String statusCodeText = HttpHelpers.statusCodeText(statusCode);
+            String statusCodeText = HttpHelpers.StatusCodes.statusCodeText(statusCode);
 
             String httpResponse = String.format(
                     "HTTP/1.1 %s %s\r\n%s\r\n%s",

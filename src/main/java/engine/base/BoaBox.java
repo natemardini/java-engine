@@ -1,12 +1,14 @@
 package engine.base;
 
-import engine.controller.Route;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.jetbrains.annotations.NotNull;
+
+import engine.controller.Route;
 
 
 public class BoaBox implements Runnable {
@@ -23,15 +25,15 @@ public class BoaBox implements Runnable {
     }
 
     @Override
-	public void run() {
+    public void run() {
     	if (middlewares.size() > 0 && middlewares.get(0) != null) {
             middlewares.get(0).yield();
         }
-    	
+
     	close();
     }
 
-    private void grabParamsFromRequestPath(BoaExchange client, Route route) {
+    private void grabParamsFromRequestPath(@NotNull BoaExchange client, @NotNull Route route) {
         Pattern p = Pattern.compile(route.getPath());
         Matcher m = p.matcher(client.getPath());
 
@@ -58,7 +60,7 @@ public class BoaBox implements Runnable {
 
     private void mapRoute(BoaExchange client, BoaMiddleware _nx) {
         List<Route> matchedRoutes = new ArrayList<>();
-        
+
         engine.getRoutes().forEach(route -> {
             if (client.getPath().matches(route.getPath()) && route.getMethods().contains(client.getMethod())) {
                 matchedRoutes.add(route);

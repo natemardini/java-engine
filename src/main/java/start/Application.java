@@ -3,6 +3,7 @@ package start;
 import engine.base.BoaEngine;
 import engine.base.BoaExchange;
 import engine.base.BoaMiddleware;
+import org.jetbrains.annotations.NotNull;
 
 public class Application extends BoaEngine {
 
@@ -21,7 +22,7 @@ public class Application extends BoaEngine {
 
     }
 
-    private static void logger(BoaExchange client, BoaMiddleware next) {
+    private static void logger(@NotNull BoaExchange client, @NotNull BoaMiddleware next) {
         long start = System.currentTimeMillis();
         next.yield();
         String method = client.getMethod();

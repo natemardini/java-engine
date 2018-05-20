@@ -7,8 +7,6 @@ import lombok.Getter;
 import lombok.Setter;
 import org.atteo.classindex.ClassIndex;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
@@ -61,7 +59,7 @@ public abstract class BoaEngine {
     private void listen() throws Exception {
         while (running) {
         	BoaExchange client = new BoaExchange(server.accept());
-        	
+
         	try {
         		BoaBox box = new BoaBox(this, client);
         		if (multiThreaded) {
