@@ -29,7 +29,7 @@ public class BoaMiddleware {
     }
 
     public void yield() {
-        if (middlewareLambda != null & client != null) {
+        if (middlewareLambda != null && client != null) {
             middlewareLambda.process(client, Objects.requireNonNullElseGet(next, BoaMiddleware::new));
         }
     }

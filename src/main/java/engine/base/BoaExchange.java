@@ -177,7 +177,7 @@ public class BoaExchange {
 
             while (!line.isEmpty()) {
                 if (line.contains(": ")) {
-                    String[] pairs = line.split(":\\s{1}");
+                    String[] pairs = line.split(":\\s");
                     if (pairs.length == 2) {
                         requestHeader.put(pairs[0], pairs[1]);
                     }

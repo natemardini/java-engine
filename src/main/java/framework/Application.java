@@ -1,9 +1,20 @@
-package start;
+package framework;
 
 import engine.base.BoaEngine;
 import engine.base.BoaExchange;
 import engine.base.BoaMiddleware;
+import framework.entities.Firm;
+import framework.entities.jooq.tables.records.FirmsRecord;
 import org.jetbrains.annotations.NotNull;
+import org.jooq.DSLContext;
+import org.jooq.SQLDialect;
+import org.jooq.impl.DSL;
+
+import java.sql.*;
+import java.util.List;
+
+import static framework.entities.jooq.Tables.*;
+
 
 public class Application extends BoaEngine {
 
@@ -29,7 +40,7 @@ public class Application extends BoaEngine {
         String path = client.getPath();
         String code = String.valueOf(client.getStatusCode());
         String ms = String.valueOf(System.currentTimeMillis() - start);
-        String log = "INC: " + method + " " + path + "  --  OUT: " + code + " (" + ms + "ms)";
+        String log = method + " " + path + "  " + code + " (" + ms + "ms)";
         System.out.println(log);
     }
 }
