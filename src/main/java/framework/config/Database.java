@@ -7,22 +7,13 @@ import org.jooq.impl.DSL;
 import java.sql.Connection;
 import java.sql.DriverManager;
 
-public class Database {
+public abstract class Database {
     private static String defaultUrl = "jdbc:postgresql://localhost:5432/cyehia";
 
-    private Connection connection;
-    private DSLContext context;
+    private static Connection connection;
+    private static DSLContext context;
 
-    public Database() {
-        try {
-            connection = DriverManager.getConnection(defaultUrl, "cyehia", "");
-            context = DSL.using(connection, SQLDialect.POSTGRES);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void connect() {
+    private static void connect() {
         try {
             connection = DriverManager.getConnection(defaultUrl, "cyehia", "");
         } catch (Exception e) {
@@ -30,7 +21,7 @@ public class Database {
         }
     }
 
-    public Connection getConnection() {
+    private static Connection getConnection() {
         try {
             if (connection == null || connection.isClosed()) {
                 connect();
@@ -42,12 +33,12 @@ public class Database {
         return connection;
     }
 
-    private void setContext() {
+    private static void setContext() {
         Connection conn = getConnection();
         context = DSL.using(conn, SQLDialect.POSTGRES);
     }
 
-    public DSLContext getContext() {
+    public static DSLContext getContext() {
         try {
             if (context == null || connection == null || connection.isClosed()) {
                 setContext();
